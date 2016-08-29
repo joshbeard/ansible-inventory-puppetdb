@@ -3,15 +3,22 @@
 # Author: David Moreau Simard <dmsimard@iweb.com>
 #
 # == Parameters
-# - host: Host on which to connect to for PuppetDB
-# - port: PuppetDB jetty port
-# - timeout: Timeout for connection
-# - ssl_verify: Whether or not to verify SSL certificate
-# - ssl_key: Path to SSL client key
-# - ssl_cert: Path to SSL client cert
-# - cache_file: Where to store the inventory cache
 # - cache_duration: How long should cache persist until refreshed automatically
-# - group_by: Generate groups based on puppet fact values
+# - cache_file: Where to store the inventory cache
+# - create_unknown_groups: Boolean for enabling creation of '<fact_name>-unknown' group (default: False)
+# - exclude_unknown_facts: Array of fact names to ignore for creating unknown groups if fact has no value
+# - full_group_names: Create Descriptive Group names - `kernel-3.2` rather than `3.2`
+# - group_by: Array of fact names for creating ansible inventory groups
+# - host: Host on which to connect to for PuppetDB
+# - hostvars: Boolean for enabling/disabling hostvar generation
+# - limit: Whether to Limit Node Query
+# - limit_value: Numerical value for limiting node query
+# - port: PuppetDB jetty port
+# - ssl_cert: Path to SSL client cert
+# - ssl_key: Path to SSL client key
+# - ssl_verify: Whether or not to verify SSL certificate
+# - timeout: Timeout for connection
+# - token: RBAC token string for PuppetDB
 #
 # == Notes on group_by
 # This will generate ansible-compatible groups based on fact values
@@ -49,13 +56,20 @@
 # always return a group called 'all' with all the hosts in it.
 #
 ---
-host: localhost
-port: 8080
-timeout: 10
-ssl_verify: False
-ssl_key:
-ssl_cert:
-cache_file: '/tmp/ansible-inventory-puppetdb.cache'
 cache_duration: 30
+cache_file: '/tmp/ansible-inventory-puppetdb.cache'
+create_unknown_groups: True
+exclude_unknown_facts:
+full_group_names: True
 group_by:
 group_by_tag:
+host: 'localhost'
+hostvars: True
+limit: False
+limit_value: None
+port: 8080
+ssl_cert: None
+ssl_key: None
+ssl_verify: False
+timeout: 10
+token: None
