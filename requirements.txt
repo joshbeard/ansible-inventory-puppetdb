@@ -1,2 +1,2 @@
-pypuppetdb==0.3.1
+pypuppetdb==2.5.1
 PyYAML

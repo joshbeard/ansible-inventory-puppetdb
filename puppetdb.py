@@ -80,8 +80,12 @@ class PuppetdbInventory(object):
             'ssl_verify': self.config.get('ssl_verify'),
             'ssl_key': self.config.get('ssl_key') or None,
             'ssl_cert': self.config.get('ssl_cert') or None,
-            'token': self.config.get('token') or None
+            'api_version': self.config.get('api_version'),
+            #'token': self.config.get('token') or None
         }
+
+        if puppetdb_config['api_version'] == 4:
+            del puppetdb_config['api_version']
 
         self.puppetdb = connect(**puppetdb_config)
 
@@ -173,9 +177,20 @@ class PuppetdbInventory(object):
 
         group_by = self.config.get('group_by')
         group_by_tag = self.config.get('group_by_tag')
+        group_by_pql = self.config.get('group_by_pql')
         create_unknown_groups = self.config.get('create_unknown_groups')
         exclude_unknown_facts = self.config.get('exclude_unknown_facts')
         full_group_names = self.config.get('full_group_names')
+
+        if group_by_pql:
+            for config_group, params in self.config.get('groups').items():
+                nodes = self.puppetdb.pql(params['pql'])
+                groups[config_group]['hosts'] = list()
+                for node in nodes:
+                    server = str(node)
+                    groups[config_group]['hosts'].append(server)
+                    if 'hostvars' in params:
+                        hostvars[server] = params['hostvars']
 
         for node in nodes_endpoint:
             server = str(node)
@@ -214,7 +229,10 @@ class PuppetdbInventory(object):
                             groups[group_key]['hosts'].append(server)
 
             if generate_hostvars:
-                hostvars[server] = self.fetch_host_facts(server)
+                if server in hostvars:
+                    hostvars[server] = {**hostvars[server], **self.fetch_host_facts(server)}
+                else:
+                    hostvars[server] = self.fetch_host_facts(server)
                 groups['_meta'] = {'hostvars': hostvars}
 
         return json.dumps(groups)

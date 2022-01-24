@@ -63,6 +63,7 @@ exclude_unknown_facts:
 full_group_names: True
 group_by:
 group_by_tag:
+group_by_pql:
 host: 'localhost'
 hostvars: True
 limit: False
@@ -73,3 +74,15 @@ ssl_key: None
 ssl_verify: False
 timeout: 10
 token: None
+# Used for PQL queries when 'group_by_pql' is true
+# For example:
+#   groups:
+#     dev:
+#       pql: >
+#         inventory {
+#           facts.org.apptier = "development"
+#           and facts.kernel = "Linux"
+#         }
+#       # Optional dict of hostvars to set
+#       hostvars: {}
+groups: {}
