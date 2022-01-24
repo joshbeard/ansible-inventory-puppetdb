@@ -1,41 +1,57 @@
 # ansible-inventory-puppetdb
-Leverage Puppet facts and PuppetDB to generate a dynamic Ansible inventory
 
-Usage
-=====
+Query PuppetDB to generate a dynamic Ansible inventory.
 
-    ./puppetdb.py -h
-    usage: puppetdb.py [-h] (--list | --host HOST)
+This is a __fork__ of [dmsimard/ansible-inventory-puppetdb](https://github.com/dmsimard/ansible-inventory-puppetdb),
+which provides an Ansible inventory script for querying PuppetDB. The upstream
+project appears dormant for several years.
 
-    PuppetDB Inventory Module
+This fork's modifications include support for
+[PQL](https://puppet.com/docs/puppetdb/7/api/query/tutorial-pql.html) and
+includes a couple of unmerged merge requests on the upstream repo:
 
-    optional arguments:
-      -h, --help   show this help message and exit
-      --refresh    Refreshes cached information
-      --list       List servers known by PuppetDB
-      --host HOST  List details about specified host
+* [API v4 compatibility](https://github.com/dmsimard/ansible-inventory-puppetdb/pull/6)
+* [New features - RBAC token auth, etc](https://github.com/dmsimard/ansible-inventory-puppetdb/pull/7)
 
-Configuration
-=============
+Additionally, this fork is structured as an [Ansible
+collection](https://docs.ansible.com/ansible/latest/user_guide/collections_using.html)
+for easy distibution.
+
+## Usage
+
+```plain
+./puppetdb.py -h
+usage: puppetdb.py [-h] (--list | --host HOST)
+
+PuppetDB Inventory Module
+
+optional arguments:
+  -h, --help   show this help message and exit
+  --refresh    Refreshes cached information
+  --list       List servers known by PuppetDB
+  --host HOST  List details about specified host
+```
+
+## Configuration
 
 See in-file documentation provided in [puppetdb.yml](https://github.com/dmsimard/ansible-inventory-puppetdb/blob/master/puppetdb.yml)
 
-Notes on large(r) amount of hosts in a single PuppetDB instance
----------------------------------------------------------------
-If you are dealing with a large(r) amount of hosts in a single PuppetDB instance, what becomes important for improving performance is:
+### Notes on large(r) amount of hosts in a single PuppetDB instance
+
+If you are dealing with a large(r) amount of hosts in a single PuppetDB
+instance, what becomes important for improving performance is:
 
 1. The JSON library to encode and decode data for Ansible to use
-> The script will automatically attempt to load, in order of performance: ujson > simplejson > json (stdlib). For best results, try to install ujson.
+    * The script will automatically attempt to load, in order of performance: ujson > simplejson > json (stdlib). For best results, try to install ujson.
 
 2. Latency between where you run the inventory script and the PuppetDB instance
-> Try to run the inventory somewhere with as little latency as you can to your PuppetDB instance.
+    * Try to run the inventory somewhere with as little latency as you can to your PuppetDB instance.
 
 3. Performance of the server the inventory is run on
 
 4. Performance of the PuppetDB server
 
-Usage example
-=============
+## Usage example
 
     ./puppetdb.py --host node.domain.tld
     {
@@ -172,8 +188,7 @@ Usage example
     }
 
 
-List example
-============
+## List example
 
 __With group_by set to 'kernelversion'__
 
